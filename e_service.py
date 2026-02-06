@@ -36,15 +36,19 @@ class Product:
         except ValueError:
                 print("Please enter a whole or decimal value")
                 
-class Cart_items(Customer, Product):
+class Cart_item():
     def __init__(self):
-        self.id = 0
-        self.qty = 0
-        self.product = Product()
         
-    def generate_id(self):
-        id += 1
-        return id
+        self.product = Product()
+        self.qty = 0
+        
+    def select_prod(self):
+        try:
+            product = int(input("Enter product ID to add product: "))
+            return product
+        
+        except ValueError:
+                print("Please enter a whole value")
     
     def ask_qty(self):
         try:
@@ -53,3 +57,13 @@ class Cart_items(Customer, Product):
         
         except ValueError:
                 print("Please enter a whole value")
+                
+class Cart():
+    def __init__(self):
+        self.customer = Customer()
+        self.item = Cart_item()
+        self.shop_cart = []
+        
+    def add_to_cart(self):
+        self.shop_cart.append(self.item)
+    
