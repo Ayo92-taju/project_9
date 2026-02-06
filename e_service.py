@@ -40,7 +40,6 @@ class Cart_items(Customer, Product):
     def __init__(self):
         self.id = 0
         self.qty = 0
-        self.customer = Customer()
         self.product = Product()
         
     def generate_id(self):
