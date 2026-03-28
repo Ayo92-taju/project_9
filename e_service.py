@@ -1,69 +1,51 @@
 class Customer:
+    _count = 0
     def __init__(self, name):
         self.name = name
-        self.id = 0
-        
-    def generate_id(self):
-        id += 1
-        return id
-    
-    def ask_name(slef):
-        name = input("\nEnter name: ")
-        return name
-    
-    def view_customers(self):
-        print(f"{self.id}. {self.name}")
+        Customer._count += 1
+        self.id = Customer._count
         
 class Product:
+    _count = 0
     def __init__(self, name, price):
         self.name = name
         self.price = price
-        self.id = 0
-        
-    def generate_id(self):
-        id += 1
-        return id
-        
-    def name_product(self):
-        name = input("Enter product name: ")
-        return name
-    
-    def price_tag(self):
-        try:
-            price = float(input("Enter price: "))
-            return price
-        
-        except ValueError:
-                print("Please enter a whole or decimal value")
+        Product._count += 1
+        self.id = Product._count
                 
 class Cart_item():
-    def __init__(self):
+    def __init__(self, product, qty):
+        self.product = product
+        self.qty = qty
         
-        self.product = Product()
-        self.qty = 0
-        
-    def select_prod(self):
-        try:
-            product = int(input("Enter product ID to add product: "))
-            return product
-        
-        except ValueError:
-                print("Please enter a whole value")
-    
-    def ask_qty(self):
-        try:
-            qty = int(input(f"How many {self.product.name}?: "))
-            return qty
-        
-        except ValueError:
-                print("Please enter a whole value")
+    def subtotal(self):
+        return self.product.price * self.qty
                 
 class Cart():
-    def __init__(self):
-        self.customer = Customer()
-        self.item = Cart_item()
+    def __init__(self, customer):
+        self.customer = customer
         self.shop_cart = []
         
-    def add_to_cart(self):
-        self.shop_cart.append(self.item)
+    def add_to_cart(self, cart_item):
+        self.shop_cart.append(cart_item)
     
+    def cart_total(self):
+        total = 0
+        for cart_item in self.shop_cart:
+            total += cart_item.subtotal()
+        return total
+    
+class Order():
+    _count = 0
+    def __init__(self, customer, cart):
+        self.customer = customer
+        self.cart = cart
+        Order._count += 1
+        self.id = Order._count
+        
+class Payment():
+    def __init__(self, order):
+        self.order = order
+        
+    def process(self):
+        print(f"Payment Confirmed! \n Order #{self.order.id} for {self.order.customer.name} \n Total - ${self.order.cart.cart_total():.2f}")
