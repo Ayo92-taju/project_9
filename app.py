@@ -45,5 +45,29 @@ def add_customer():
     return f"New customer '{customer.name}' added with ID {customer.id}."
 
 
+@app.route('/orders', methods=['POST'])
+def add_order():
+    customer_id = request.form['customer_id']
+    customer = next((c for c in customers if c.id == int(customer_id)), None)
+    if customer is None:
+        return "Customer not found."
+    
+    product_id = request.form['product_id']
+    product = next((p for p in products if p.id == int(product_id)), None)
+    if product is None:
+        return "Product not found."
+    
+    qty = int(request.form['qty'])
+    cart_item = Cart_item(product, qty)
+        
+    cart = Cart(customer)
+    cart.add_to_cart(cart_item)
+
+
+    order = Order(customer, cart)
+    orders.append(order)
+
+    return f"Order #{order.id} placed for {customer.name} — Total: ${cart.cart_total():.2f}"
+
 if __name__ == '__main__':
     app.run(debug=True)
