@@ -4,7 +4,6 @@ from e_service import Customer, Product, Cart_item, Cart, Order, Payment
 
 app = Flask(__name__)
 
-# In-memory storage
 customers = []
 products = []
 orders = []
