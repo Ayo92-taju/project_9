@@ -157,15 +157,30 @@ def get_orders():
     <h2>Orders</h2>
     {result}
     <h3>Place Order</h3>
-    <form method="POST" action="/orders">
+    <form method="POST" action="/orders" id="order-form">
         <select name="customer_id">{customer_options}</select><br><br>
-        <select name="product_id">{product_options}</select><br><br>
-        <input name="qty" placeholder="Quantity" required><br><br>
-        <select name="product_id">{product_options}</select><br><br>
-        <input name="qty" placeholder="Quantity" required><br><br>
+
+        <div id="items">
+            <div class="item-row">
+                <select name="product_id">{product_options}</select>
+                <input name="qty" placeholder="Quantity" required>
+                <br><br>
+            </div>
+        </div>
+
+        <button type="button" onclick="addRow()">+ Add item</button><br><br>
         <button type="submit">Place Order</button>
     </form>
     <br><a href="/">Back</a>
+
+    <script>
+        function addRow() {{
+            const container = document.getElementById('items');
+            const firstRow = container.querySelector('.item-row');
+            const newRow = firstRow.cloneNode(true);
+            container.appendChild(newRow);
+        }}
+    </script>
     '''
 
 
