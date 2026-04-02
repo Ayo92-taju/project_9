@@ -28,7 +28,14 @@ def get_products():
     else:
         result = "<ul>"
         for p in products:
-            result += f"<li>{p.id}. {p.name} — ${p.price:.2f}</li>"
+            result += f'''
+                <li>
+                {p.id}. {p.name} — ${p.price:.2f}
+                <form method="POST" action="/products/delete/{p.id}" style="display:inline">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+            '''
         result += "</ul>"
 
     return f'''
@@ -55,6 +62,18 @@ def add_product():
     <a href="/products">Back to products</a>
     '''
 
+@app.route('/products/delete/<int:product_id>', methods=['POST'])
+def delete_product(product_id):
+    global products
+    product = next((p for p in products if p.id == product_id), None)
+    if product is None:
+        return "Product not found."
+    products.remove(product)
+    return f'''
+    <p>Product <b>{product.name}</b> deleted.</p>
+    <a href="/products">Back to products</a>
+    '''
+
 
 @app.route('/customers', methods=['GET'])
 def get_customers():
@@ -63,7 +82,14 @@ def get_customers():
     else:
         result = "<ul>"
         for c in customers:
-            result += f"<li>{c.id}. {c.name}</li>"
+            result += f'''
+            <li>
+                {c.id}. {c.name}
+                <form method="POST" action="/customers/delete/{c.id}" style="display:inline">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+            '''
         result += "</ul>"
 
     return f'''
@@ -88,6 +114,18 @@ def add_customer():
     <a href="/customers">Back to customers</a>
     '''
 
+@app.route('/customers/delete/<int:customer_id>', methods=['POST'])
+def delete_customer(customer_id):
+    global customers
+    customer = next((c for c in customers if c.id == customer_id), None)
+    if customer is None:
+        return "Customer not found."
+    customers.remove(customer)
+    return f'''
+    <p>Customer <b>{customer.name}</b> deleted.</p>
+    <a href="/customers">Back to customers</a>
+    '''
+
 
 @app.route('/orders', methods=['GET'])
 def get_orders():
@@ -96,7 +134,14 @@ def get_orders():
     else:
         result = "<ul>"
         for o in orders:
-            result += f"<li>Order #{o.id} — {o.customer.name} — ${o.cart.cart_total():.2f}</li>"
+            result += f'''
+            <li>
+            Order #{o.id} — {o.customer.name} — ${o.cart.cart_total():.2f}
+            <form method="POST" action="/orders/delete/{o.id}" style="display:inline">
+                <button type="submit">Delete</button>
+            </form>
+            </li>
+            '''
         result += "</ul>"
 
     product_options = "".join(
@@ -148,6 +193,17 @@ def add_order():
     <a href="/orders">Back to orders</a>
     '''
 
+@app.route('/orders/delete/<int:order_id>', methods=['POST'])
+def delete_order(order_id):
+    global orders
+    order = next((o for o in orders if o.id == order_id), None)
+    if order is None:
+        return "Order not found."
+    orders.remove(order)
+    return f'''
+    <p>Order <b>{order.id}</b> deleted.</p>
+    <a href="/orders">Back to orders</a>
+    '''
 
 if __name__ == '__main__':
     app.run(debug=True)
