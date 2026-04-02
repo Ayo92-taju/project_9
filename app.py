@@ -161,6 +161,8 @@ def get_orders():
         <select name="customer_id">{customer_options}</select><br><br>
         <select name="product_id">{product_options}</select><br><br>
         <input name="qty" placeholder="Quantity" required><br><br>
+        <select name="product_id">{product_options}</select><br><br>
+        <input name="qty" placeholder="Quantity" required><br><br>
         <button type="submit">Place Order</button>
     </form>
     <br><a href="/">Back</a>
@@ -174,16 +176,17 @@ def add_order():
     if customer is None:
         return "Customer not found."
 
-    product_id = request.form['product_id']
-    product = next((p for p in products if p.id == int(product_id)), None)
-    if product is None:
-        return "Product not found."
-
-    qty = int(request.form['qty'])
-    cart_item = Cart_item(product, qty)
-
+    product_ids = request.form.getlist('product_id')
+    qtys = request.form.getlist('qty')
+    
     cart = Cart(customer)
-    cart.add_to_cart(cart_item)
+    
+    for product_id, qty in zip(product_ids, qtys):
+        product = next((p for p in products if p.id == int(product_id)), None)
+        if product is None:
+            continue
+        cart_item = Cart_item(product, int(qty))
+        cart.add_to_cart(cart_item)
 
     order = Order(customer, cart)
     orders.append(order)
