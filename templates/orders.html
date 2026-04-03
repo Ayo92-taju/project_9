@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Orders</h2>
+    {% if orders %}
+        <ul>
+            {% for o in orders %}
+            <li>
+                Order #{{ o.id }} — {{ o.customer.name }} — ${{ o.cart.cart_total() | round(2) }}
+                <form method="POST" action="/orders/delete/{{ o.id }}" style="display:inline">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No orders yet.</p>
+    {% endif %}
+
+    <h3>Place Order</h3>
+    <form method="POST" action="/orders" id="order-form">
+        <select name="customer_id">
+            {% for c in customers %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <div id="items">
+            <div class="item-row">
+                <select name="product_id">
+                    {% for p in products %}
+                        <option value="{{ p.id }}">{{ p.name }} (${{ p.price | round(2) }})</option>
+                    {% endfor %}
+                </select>
+                <input name="qty" placeholder="Quantity" required>
+                <br><br>
+            </div>
+        </div>
+
+        <button type="button" onclick="addRow()">+ Add item</button><br><br>
+        <button type="submit">Place Order</button>
+    </form>
+
+    <script>
+        function addRow() {
+            const container = document.getElementById('items');
+            const firstRow = container.querySelector('.item-row');
+            const newRow = firstRow.cloneNode(true);
+            container.appendChild(newRow);
+        }
+    </script>
+    <br><a href="/">Back</a>
+{% endblock %}

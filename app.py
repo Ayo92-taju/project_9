@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template, redirect, url_for
 
 from e_service import Customer, Product, Cart_item, Cart, Order, Payment
 
@@ -11,45 +11,12 @@ orders = []
 
 @app.route('/')
 def home():
-    return '''
-    <h2>E-Commerce System</h2>
-    <ul>
-        <li><a href="/products">Products</a></li>
-        <li><a href="/customers">Customers</a></li>
-        <li><a href="/orders">Orders</a></li>
-    </ul>
-    '''
+    return render_template('home.html')
 
 
 @app.route('/products', methods=['GET'])
 def get_products():
-    if not products:
-        result = "<p>No products available.</p>"
-    else:
-        result = "<ul>"
-        for p in products:
-            result += f'''
-                <li>
-                {p.id}. {p.name} — ${p.price:.2f}
-                <form method="POST" action="/products/delete/{p.id}" style="display:inline">
-                    <button type="submit">Delete</button>
-                </form>
-            </li>
-            '''
-        result += "</ul>"
-
-    return f'''
-    <h2>Products</h2>
-    {result}
-    <h3>Add Product</h3>
-    <form method="POST" action="/products">
-        <input name="name" placeholder="Product name" required><br><br>
-        <input name="price" placeholder="Price" required><br><br>
-        <button type="submit">Add Product</button>
-    </form>
-    <br><a href="/">Back</a>
-    '''
-
+    return render_template('products.html', products=products)
 
 @app.route('/products', methods=['POST'])
 def add_product():
@@ -57,10 +24,7 @@ def add_product():
     price = float(request.form['price'])
     product = Product(name, price)
     products.append(product)
-    return f'''
-    <p>Product <b>{product.name}</b> added with ID {product.id}.</p>
-    <a href="/products">Back to products</a>
-    '''
+    return redirect(url_for('get_products'))
 
 @app.route('/products/delete/<int:product_id>', methods=['POST'])
 def delete_product(product_id):
@@ -69,50 +33,19 @@ def delete_product(product_id):
     if product is None:
         return "Product not found."
     products.remove(product)
-    return f'''
-    <p>Product <b>{product.name}</b> deleted.</p>
-    <a href="/products">Back to products</a>
-    '''
+    return redirect(url_for('get_products'))
 
 
 @app.route('/customers', methods=['GET'])
 def get_customers():
-    if not customers:
-        result = "<p>No customers yet.</p>"
-    else:
-        result = "<ul>"
-        for c in customers:
-            result += f'''
-            <li>
-                {c.id}. {c.name}
-                <form method="POST" action="/customers/delete/{c.id}" style="display:inline">
-                    <button type="submit">Delete</button>
-                </form>
-            </li>
-            '''
-        result += "</ul>"
-
-    return f'''
-    <h2>Customers</h2>
-    {result}
-    <h3>Add Customer</h3>
-    <form method="POST" action="/customers">
-        <input name="name" placeholder="Customer name" required><br><br>
-        <button type="submit">Add Customer</button>
-    </form>
-    <br><a href="/">Back</a>
-    '''
-
+    return render_template('customers.html', customers=customers)
 
 @app.route('/customers', methods=['POST'])
 def add_customer():
     name = request.form['name']
     customer = Customer(name)
     customers.append(customer)
-    return f'''
-    <p>Customer <b>{customer.name}</b> added with ID {customer.id}.</p>
-    <a href="/customers">Back to customers</a>
-    '''
+    return redirect(url_for('get_customers'))
 
 @app.route('/customers/delete/<int:customer_id>', methods=['POST'])
 def delete_customer(customer_id):
@@ -121,68 +54,12 @@ def delete_customer(customer_id):
     if customer is None:
         return "Customer not found."
     customers.remove(customer)
-    return f'''
-    <p>Customer <b>{customer.name}</b> deleted.</p>
-    <a href="/customers">Back to customers</a>
-    '''
+    return redirect(url_for('get_customers'))
 
 
 @app.route('/orders', methods=['GET'])
 def get_orders():
-    if not orders:
-        result = "<p>No orders yet.</p>"
-    else:
-        result = "<ul>"
-        for o in orders:
-            result += f'''
-            <li>
-            Order #{o.id} — {o.customer.name} — ${o.cart.cart_total():.2f}
-            <form method="POST" action="/orders/delete/{o.id}" style="display:inline">
-                <button type="submit">Delete</button>
-            </form>
-            </li>
-            '''
-        result += "</ul>"
-
-    product_options = "".join(
-        f'<option value="{p.id}">{p.name} (${p.price:.2f})</option>'
-        for p in products
-    )
-    customer_options = "".join(
-        f'<option value="{c.id}">{c.name}</option>'
-        for c in customers
-    )
-
-    return f'''
-    <h2>Orders</h2>
-    {result}
-    <h3>Place Order</h3>
-    <form method="POST" action="/orders" id="order-form">
-        <select name="customer_id">{customer_options}</select><br><br>
-
-        <div id="items">
-            <div class="item-row">
-                <select name="product_id">{product_options}</select>
-                <input name="qty" placeholder="Quantity" required>
-                <br><br>
-            </div>
-        </div>
-
-        <button type="button" onclick="addRow()">+ Add item</button><br><br>
-        <button type="submit">Place Order</button>
-    </form>
-    <br><a href="/">Back</a>
-
-    <script>
-        function addRow() {{
-            const container = document.getElementById('items');
-            const firstRow = container.querySelector('.item-row');
-            const newRow = firstRow.cloneNode(true);
-            container.appendChild(newRow);
-        }}
-    </script>
-    '''
-
+    return render_template('orders.html', orders=orders, products=products, customers=customers)
 
 @app.route('/orders', methods=['POST'])
 def add_order():
@@ -193,9 +70,9 @@ def add_order():
 
     product_ids = request.form.getlist('product_id')
     qtys = request.form.getlist('qty')
-    
+
     cart = Cart(customer)
-    
+
     for product_id, qty in zip(product_ids, qtys):
         product = next((p for p in products if p.id == int(product_id)), None)
         if product is None:
@@ -205,11 +82,7 @@ def add_order():
 
     order = Order(customer, cart)
     orders.append(order)
-
-    return f'''
-    <p>Order <b>#{order.id}</b> placed for <b>{customer.name}</b> — Total: <b>${cart.cart_total():.2f}</b></p>
-    <a href="/orders">Back to orders</a>
-    '''
+    return redirect(url_for('get_orders'))
 
 @app.route('/orders/delete/<int:order_id>', methods=['POST'])
 def delete_order(order_id):
@@ -218,10 +91,8 @@ def delete_order(order_id):
     if order is None:
         return "Order not found."
     orders.remove(order)
-    return f'''
-    <p>Order <b>{order.id}</b> deleted.</p>
-    <a href="/orders">Back to orders</a>
-    '''
+    return redirect(url_for('get_orders'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

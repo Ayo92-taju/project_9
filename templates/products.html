@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Products</h2>
+    {% if products %}
+        <ul>
+            {% for p in products %}
+            <li>
+                {{p.id}}. {{p.name}} — ${{p.price | round(2)}}
+                <form method="POST" action="/products/delete/{{p.id}}" style="display:inline">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No products available.</p>
+    {% endif %}
+    <h3>Add Product</h3>
+    <form method="POST" action="/products">
+        <input name="name" placeholder="Product name" required><br><br>
+        <input name="price" placeholder="Price" required><br><br>
+        <button type="submit">Add Product</button>
+    </form>
+    <br><a href="/">Back</a>
+{% endblock %}
