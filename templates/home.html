@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>E-Commerce System</h2>
-    <ul>
-        <li><a href="/products">Products</a></li>
-        <li><a href="/customers">Customers</a></li>
-        <li><a href="/orders">Orders</a></li>
-    </ul>
+    <div class="p-5 mb-4 bg-white rounded shadow-sm">
+        <h1>E-Commerce System</h1>
+        <p class="text-muted">Manage your products, customers and orders.</p>
+        <div class="d-flex gap-3 mt-4">
+            <a href="/products" class="btn btn-dark btn-lg">Products</a>
+            <a href="/customers" class="btn btn-dark btn-lg">Customers</a>
+            <a href="/orders" class="btn btn-dark btn-lg">Orders</a>
+        </div>
+    </div>
 {% endblock %}

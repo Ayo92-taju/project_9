@@ -3,43 +3,63 @@
 {% block content %}
     <h2>Orders</h2>
     {% if orders %}
-        <ul>
-            {% for o in orders %}
-            <li>
-                Order #{{ o.id }} — {{ o.customer.name }} — ${{ o.cart.cart_total() | round(2) }}
-                <form method="POST" action="/orders/delete/{{ o.id }}" style="display:inline">
-                    <button type="submit">Delete</button>
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                <tr>
+                    <td>{{ o.id }}</td>
+                    <td>{{ o.customer.name }}</td>
+                    <td>${{ o.cart.cart_total() | round(2) }}</td>
+                    <td>
+                        <form method="POST" action="/orders/delete/{{ o.id }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p>No orders yet.</p>
+        <p class="text-muted">No orders yet.</p>
     {% endif %}
 
-    <h3>Place Order</h3>
-    <form method="POST" action="/orders" id="order-form">
-        <select name="customer_id">
-            {% for c in customers %}
-                <option value="{{ c.id }}">{{ c.name }}</option>
-            {% endfor %}
-        </select><br><br>
-
-        <div id="items">
-            <div class="item-row">
-                <select name="product_id">
-                    {% for p in products %}
-                        <option value="{{ p.id }}">{{ p.name }} (${{ p.price | round(2) }})</option>
+    <div class="card mt-4 p-4" style="max-width: 500px;">
+        <h4>Place Order</h4>
+        <form method="POST" action="/orders">
+            <div class="mb-3">
+                <label class="form-label">Customer</label>
+                <select class="form-select" name="customer_id">
+                    {% for c in customers %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
                     {% endfor %}
                 </select>
-                <input name="qty" placeholder="Quantity" required>
-                <br><br>
             </div>
-        </div>
 
-        <button type="button" onclick="addRow()">+ Add item</button><br><br>
-        <button type="submit">Place Order</button>
-    </form>
+            <div id="items">
+                <div class="item-row mb-3">
+                    <label class="form-label">Product</label>
+                    <select class="form-select" name="product_id">
+                        {% for p in products %}
+                            <option value="{{ p.id }}">{{ p.name }} (${{ p.price | round(2) }})</option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label mt-2">Quantity</label>
+                    <input class="form-control" name="qty" placeholder="Quantity" required>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">+ Add item</button><br>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </form>
+    </div>
 
     <script>
         function addRow() {
@@ -49,5 +69,4 @@
             container.appendChild(newRow);
         }
     </script>
-    <br><a href="/">Back</a>
 {% endblock %}
