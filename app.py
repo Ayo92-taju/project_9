@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
-
+import sqlite3
 from e_service import Customer, Product, Cart_item, Cart, Order, Payment
+import sqlite3
 
 app = Flask(__name__)
 
@@ -8,6 +9,10 @@ customers = []
 products = []
 orders = []
 
+def get_db():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite.Row
+    return conn
 
 @app.route('/')
 def home():
