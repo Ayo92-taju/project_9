@@ -11,7 +11,7 @@ orders = []
 
 def get_db():
     conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite.Row
+    conn.row_factory = sqlite3.Row
     return conn
 
 @app.route('/')
@@ -21,14 +21,20 @@ def home():
 
 @app.route('/products', methods=['GET'])
 def get_products():
+    conn = get_db()
+    products = conn.execute('SELECT * FROM products').fetchall()
+    conn.commit()
+    conn.close()
     return render_template('products.html', products=products)
 
 @app.route('/products', methods=['POST'])
 def add_product():
     name = request.form['name']
     price = float(request.form['price'])
-    product = Product(name, price)
-    products.append(product)
+    conn = get.db()
+    conn.execute('INSERT INTP products (name, price) VALUES (?, ?)', (name, price))
+    conn.commit()
+    conn.close()
     return redirect(url_for('get_products'))
 
 @app.route('/products/delete/<int:product_id>', methods=['POST'])
