@@ -16,8 +16,8 @@
                 {% for o in orders %}
                 <tr>
                     <td>{{ o.id }}</td>
-                    <td>{{ o.customer.name }}</td>
-                    <td>${{ o.cart.cart_total() | round(2) }}</td>
+                    <td>{{ o.customer_name }}</td>
+                    <td>${{ o.total | round(2) }}</td>
                     <td>
                         <form method="POST" action="/orders/delete/{{ o.id }}">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
