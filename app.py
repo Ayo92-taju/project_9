@@ -31,7 +31,7 @@ def get_products():
 def add_product():
     name = request.form['name']
     price = float(request.form['price'])
-    conn = get.db()
+    conn = get_db()
     conn.execute('INSERT INTP products (name, price) VALUES (?, ?)', (name, price))
     conn.commit()
     conn.close()
