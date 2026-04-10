@@ -32,18 +32,17 @@ def add_product():
     name = request.form['name']
     price = float(request.form['price'])
     conn = get_db()
-    conn.execute('INSERT INTP products (name, price) VALUES (?, ?)', (name, price))
+    conn.execute('INSERT INTO products (name, price) VALUES (?, ?)', (name, price))
     conn.commit()
     conn.close()
     return redirect(url_for('get_products'))
 
 @app.route('/products/delete/<int:product_id>', methods=['POST'])
 def delete_product(product_id):
-    global products
-    product = next((p for p in products if p.id == product_id), None)
-    if product is None:
-        return "Product not found."
-    products.remove(product)
+    conn = get_db()
+    conn.execute('DELETE FROM products WHERE id = ?', (product_id,))
+    conn.commit()
+    conn.close()
     return redirect(url_for('get_products'))
 
 
