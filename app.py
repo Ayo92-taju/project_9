@@ -99,10 +99,7 @@ def add_order():
     order_id = cursor.lastrowid
 
     for product_id, qty in zip(product_ids, qtys):
-        conn.execute('''
-            INSERT INTO order_items (order_id, product_id, qty)
-            VALUES (?, ?, ?)
-        ''', (order_id, product_id, qty))
+        conn.execute('INSERT INTO order_items (order_id, product_id, qty) VALUES (?, ?, ?)', (order_id, product_id, qty))
 
     conn.commit()
     conn.close()
