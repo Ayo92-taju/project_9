@@ -116,5 +116,30 @@ def delete_order(order_id):
     return redirect(url_for('get_orders'))
 
 
+@app.route('/orders/<int:order_id>/order_details', methods=['GET'])
+def get_order_details(order_id):
+    conn = get_db()
+    order = conn.execute('''
+        SELECT orders.id, customers.name as customer_name
+        FROM orders
+        JOIN customers ON orders.customer_id = customers.id
+        WHERE orders.id = ?
+    ''', (order_id,)).fetchone()
+
+    items = conn.execute('''
+        SELECT products.name as product_name,
+               order_items.qty,
+               products.price,
+               order_items.qty * products.price as subtotal
+        FROM order_items
+        JOIN products ON order_items.product_id = products.id
+        WHERE order_items.order_id = ?
+    ''', (order_id,)).fetchall()
+
+    conn.close()
+    total = sum(item['subtotal'] for item in items)
+    return render_template('order_details.html', order=order, items=items, total=total)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

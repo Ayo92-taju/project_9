@@ -9,7 +9,8 @@
                     <th>Order #</th>
                     <th>Customer</th>
                     <th>Total</th>
-                    <th>Action</th>
+                    <th>Details</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,6 +19,9 @@
                     <td>{{ o.id }}</td>
                     <td>{{ o.customer_name }}</td>
                     <td>${{ o.total | round(2) }}</td>
+                    <td>
+                        <a href="/orders/{{ o.id }}/order_details" class="btn btn-secondary btn-sm">Details</a>
+                    </td>
                     <td>
                         <form method="POST" action="/orders/delete/{{ o.id }}">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
